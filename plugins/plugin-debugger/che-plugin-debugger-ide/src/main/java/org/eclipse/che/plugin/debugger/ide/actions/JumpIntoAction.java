@@ -32,29 +32,26 @@ import static org.eclipse.che.ide.workspace.perspectives.project.ProjectPerspect
 /**
  * Action which allows step over in debugger session
  *
- * @author Mykola Morhun
+ * @author Igor Vinokur
  */
 public class JumpIntoAction extends AbstractPerspectiveAction {
 
   private final DebuggerManager debuggerManager;
-  private final AppContext appContext;
   private final EditorAgent editorAgent;
 
   @Inject
   public JumpIntoAction(
       DebuggerManager debuggerManager,
-      AppContext appContext,
       EditorAgent editorAgent,
       DebuggerLocalizationConstant locale,
       DebuggerResources resources) {
     super(
         Collections.singletonList(PROJECT_PERSPECTIVE_ID),
-        "jump into",
-        "jump into description",
+        locale.jumpToCursor(),
+        locale.jumpToCursorDescription(),
         null,
         resources.stepOver());
     this.debuggerManager = debuggerManager;
-    this.appContext = appContext;
     this.editorAgent = editorAgent;
   }
 
@@ -62,7 +59,7 @@ public class JumpIntoAction extends AbstractPerspectiveAction {
   public void actionPerformed(ActionEvent e) {
     Debugger debugger = debuggerManager.getActiveDebugger();
     EditorPartPresenter editor = editorAgent.getActiveEditor();
-    int line = ((TextEditor) editor).getCursorPosition().getLine();
+    int line = ((TextEditor) editor).getCursorPosition().getLine() + 1;
     String path = editor.getEditorInput().getFile().getLocation().toString();
     if (debugger != null) {
       debugger.jumpInto(line, path);

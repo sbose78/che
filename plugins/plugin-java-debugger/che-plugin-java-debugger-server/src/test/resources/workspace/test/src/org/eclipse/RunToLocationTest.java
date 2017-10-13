@@ -12,8 +12,8 @@ package org.eclipse;
 
 import java.util.stream.Stream;
 
-/** @author Anatolii Bazko */
-public class BreakpointsTest {
+/** @author Igor Vinokur */
+public class RunToLocationTest {
 
   public static void main(String[] args) {
     String string = "string";

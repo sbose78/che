@@ -74,7 +74,7 @@ public class JavaDebuggerTest {
   @Test(priority = 20)
   public void testStartDebugger() throws Exception {
     BreakpointImpl breakpoint =
-        new BreakpointImpl(new LocationImpl("com.HelloWorld", 17), false, null);
+        new BreakpointImpl(new LocationImpl("com.HelloWorld", 17), false, null, 0);
     debugger.start(new StartActionImpl(singletonList(breakpoint)));
 
     DebuggerEvent debuggerEvent = events.take();
@@ -92,7 +92,8 @@ public class JavaDebuggerTest {
   public void testSteps() throws Exception {
     debugger.deleteAllBreakpoints();
 
-    debugger.addBreakpoint(new BreakpointImpl(new LocationImpl("com.HelloWorld", 20), false, null));
+    debugger.addBreakpoint(
+        new BreakpointImpl(new LocationImpl("com.HelloWorld", 20), false, null, 0));
 
     assertTrue(events.take() instanceof BreakpointActivatedEvent);
 

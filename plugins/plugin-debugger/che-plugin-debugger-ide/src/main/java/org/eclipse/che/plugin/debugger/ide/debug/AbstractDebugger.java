@@ -574,10 +574,13 @@ public abstract class AbstractDebugger implements Debugger, DebuggerObservable {
 
   @Override
   public void jumpInto(int lineNumber, String source) {
-      JumpIntoActionDto dto = dtoFactory.createDto(JumpIntoActionDto.class);
-      dto.setType(Action.TYPE.JUMP_TO_CURSOR);
-      dto.setLocation(dtoFactory.createDto(LocationDto.class).withLineNumber(lineNumber).withTarget(source));
-      service.jumpInto(debugSessionDto.getId(), dto);
+    JumpIntoActionDto jumpIntoActionDto =
+        dtoFactory
+            .createDto(JumpIntoActionDto.class)
+            .withType(Action.TYPE.JUMP_TO_CURSOR)
+            .withTarget(source)
+            .withLineNumber(lineNumber);
+      service.jumpInto(debugSessionDto.getId(), jumpIntoActionDto);
   }
 
   @Override

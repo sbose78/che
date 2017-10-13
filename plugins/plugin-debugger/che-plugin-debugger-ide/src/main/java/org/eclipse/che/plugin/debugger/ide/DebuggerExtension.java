@@ -122,6 +122,7 @@ public class DebuggerExtension {
     debuggerToolbarActionGroup.add(stepIntoAction);
     debuggerToolbarActionGroup.add(stepOverAction);
     debuggerToolbarActionGroup.add(stepOutAction);
+    debuggerToolbarActionGroup.add(jumpIntoAction);
     debuggerToolbarActionGroup.add(disconnectDebuggerAction);
     debuggerToolbarActionGroup.add(deleteAllBreakpointsAction);
     debuggerToolbarActionGroup.add(changeVariableValueAction);

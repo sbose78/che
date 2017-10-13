@@ -18,15 +18,17 @@ public class BreakpointImpl implements Breakpoint {
   private final Location location;
   private final boolean enabled;
   private final String condition;
+  private final int hitCount;
 
-  public BreakpointImpl(Location location, boolean enabled, String condition) {
+  public BreakpointImpl(Location location, boolean enabled, String condition, int hitCount) {
     this.location = location;
     this.enabled = enabled;
     this.condition = condition;
+    this.hitCount = hitCount;
   }
 
   public BreakpointImpl(Location location) {
-    this(location, false, null);
+    this(location, false, null, 0);
   }
 
   @Override
@@ -46,7 +48,7 @@ public class BreakpointImpl implements Breakpoint {
 
   @Override
   public int getHitCount() {
-    return 0;
+    return hitCount;
   }
 
   @Override

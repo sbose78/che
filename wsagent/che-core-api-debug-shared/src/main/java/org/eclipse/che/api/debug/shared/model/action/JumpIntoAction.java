@@ -10,9 +10,8 @@
  */
 package org.eclipse.che.api.debug.shared.model.action;
 
-import org.eclipse.che.api.debug.shared.dto.BreakpointDto;
-import org.eclipse.che.api.debug.shared.dto.LocationDto;
+public interface JumpIntoAction extends Action {
+  String getTarget();
 
-public interface JumpIntoAction extends Action{
-  LocationDto getLocation();
+  int getLineNumber();
 }

@@ -325,7 +325,11 @@ public class BreakpointManagerImpl
 
           toRemove.add(breakpoint);
           toAdd.add(
-              new BreakpointImpl(newLocation, breakpoint.isEnabled(), breakpoint.getCondition()));
+              new BreakpointImpl(
+                  newLocation,
+                  breakpoint.isEnabled(),
+                  breakpoint.getCondition(),
+                  breakpoint.getHitCount()));
         }
       }
 

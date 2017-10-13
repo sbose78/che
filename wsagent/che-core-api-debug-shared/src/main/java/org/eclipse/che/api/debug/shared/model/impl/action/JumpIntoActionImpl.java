@@ -10,30 +10,33 @@
  *  *   Red Hat, Inc. - initial API and implementation
  *   ******************************************************************************
  */
-package org.eclipse.che.api.debug.shared.dto.action;
+
+package org.eclipse.che.api.debug.shared.model.impl.action;
 
 import org.eclipse.che.api.debug.shared.dto.LocationDto;
+import org.eclipse.che.api.debug.shared.model.Location;
 import org.eclipse.che.api.debug.shared.model.action.JumpIntoAction;
-import org.eclipse.che.dto.shared.DTO;
+import org.eclipse.che.api.debug.shared.model.action.ResumeAction;
 
-/** @author Igor Vinokur */
-@DTO
-public interface JumpIntoActionDto extends ActionDto, JumpIntoAction {
-  TYPE getType();
+public class JumpIntoActionImpl extends ActionImpl implements JumpIntoAction {
 
-  void setType(TYPE type);
+    private final String target;
+    private final int lineNumber;
 
-  JumpIntoActionDto withType(TYPE type);
+    public JumpIntoActionImpl(String target, int lineNumber) {
+        super(TYPE.JUMP_TO_CURSOR);
+        this.target = target;
+        this.lineNumber = lineNumber;
+    }
 
-  String getTarget();
 
-  void setTarget(String target);
+    @Override
+    public String getTarget() {
+        return target;
+    }
 
-  JumpIntoActionDto withTarget(String target);
-
-  int getLineNumber();
-
-  void setLineNumber(int lineNumber);
-
-  JumpIntoActionDto withLineNumber(int lineNumber);
+    @Override
+    public int getLineNumber() {
+        return lineNumber;
+    }
 }
