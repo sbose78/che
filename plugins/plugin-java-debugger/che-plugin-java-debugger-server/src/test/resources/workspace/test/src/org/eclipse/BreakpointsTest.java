@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 public class BreakpointsTest {
 
   public static void main(String[] args) {
-    String string = "string";
     sayHello();
     new InnerClass().sayHello();
     new Thread() {

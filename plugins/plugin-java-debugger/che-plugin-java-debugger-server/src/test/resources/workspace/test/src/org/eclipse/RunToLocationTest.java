@@ -16,7 +16,11 @@ import java.util.stream.Stream;
 public class RunToLocationTest {
 
   public static void main(String[] args) {
-    String string = "string";
+    System.out.println("Hello");
+    System.out.println("Hello");
+    System.out.println("Hello");
+    System.out.println("Hello");
+    System.out.println("Hello");
     sayHello();
     new InnerClass().sayHello();
     new Thread() {

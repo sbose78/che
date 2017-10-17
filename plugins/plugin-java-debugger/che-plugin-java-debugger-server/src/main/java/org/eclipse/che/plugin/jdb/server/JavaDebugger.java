@@ -205,7 +205,13 @@ public class JavaDebugger implements EventsHandler, Debugger {
     BreakpointImpl breakpoint =
         new BreakpointImpl(
             new LocationImpl(action.getTarget(), action.getLineNumber()), false, null, -1);
-    addBreakpoint(breakpoint);
+    try {
+      addBreakpoint(breakpoint);
+    } catch (DebuggerException e) {
+      if (!"Class not loaded".equals(e.getMessage())) {
+        throw e;
+      }
+    }
 
     resume(new ResumeActionImpl());
   }
@@ -573,12 +579,11 @@ public class JavaDebugger implements EventsHandler, Debugger {
       throws DebuggerException {
     setCurrentThread(event.thread());
     boolean hitBreakpoint;
+    EventRequest request = event.request();
     ExpressionParser parser =
         (ExpressionParser)
-            event
-                .request()
-                .getProperty("org.eclipse.che.ide.java.debug.condition.expression.parser");
-    Integer hitCount = (Integer) event.request().getProperty("hit_count");
+            request.getProperty("org.eclipse.che.ide.java.debug.condition.expression.parser");
+    Integer hitCount = (Integer) request.getProperty("hit_count");
     if (parser != null) {
       com.sun.jdi.Value result = evaluate(parser, event.thread().uniqueID(), 0);
       hitBreakpoint =

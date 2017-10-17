@@ -23,7 +23,7 @@ import org.eclipse.che.api.debug.shared.model.event.SuspendEvent;
 import org.eclipse.che.api.debug.shared.model.impl.BreakpointImpl;
 import org.eclipse.che.api.debug.shared.model.impl.LocationImpl;
 import org.eclipse.che.api.debug.shared.model.impl.action.JumpIntoActionImpl;
-import org.eclipse.che.api.debugger.server.exceptions.DebuggerException;
+import org.eclipse.che.api.debug.shared.model.impl.action.ResumeActionImpl;
 import org.eclipse.che.plugin.jdb.server.util.ProjectApiUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -41,7 +41,7 @@ public class RunToLocationTest {
 
     Location location =
         new LocationImpl(
-            "/test/src/org/eclipse/BreakpointsTest.java", 19, false, -1, "/test", null, -1);
+            "/test/src/org/eclipse/RunToLocationTest.java", 19, false, -1, "/test", null, -1);
 
     events = new ArrayBlockingQueue<>(10);
     debugger = startJavaDebugger(new BreakpointImpl(location), events);
@@ -58,11 +58,7 @@ public class RunToLocationTest {
 
   @Test
   public void shouldRunToLocationInsideClass() throws Exception {
-    try {
-      debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/BreakpointsTest.java", 20));
-    } catch (DebuggerException e) {
-      // class might not be loaded yet
-    }
+    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 20));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -70,7 +66,7 @@ public class RunToLocationTest {
     Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
     Location actualLocation = actualBreakpoint.getLocation();
     assertEquals(actualLocation.getLineNumber(), 20);
-    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/BreakpointsTest.java");
+    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/RunToLocationTest.java");
     assertTrue(actualBreakpoint.getHitCount() == -1);
     assertTrue(actualBreakpoint.isEnabled());
 
@@ -79,41 +75,21 @@ public class RunToLocationTest {
 
     Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
     assertEquals(suspendLocation.getLineNumber(), 20);
-    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/BreakpointsTest.java");
+    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/RunToLocationTest.java");
   }
 
   @Test(priority = 1)
-  public void shouldRunToLocationInsideMethod() throws Exception {
-    try {
-      debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/BreakpointsTest.java", 36));
-    } catch (DebuggerException e) {
-      // class might not be loaded yet
-    }
+  public void shouldNotSuspendOnTemporaryBreakPointIfUsualBreakpointWasActivated()
+      throws Exception {
+    Location location1 =
+        new LocationImpl(
+            "/test/src/org/eclipse/RunToLocationTest.java", 21, false, -1, "/test", null, -1);
 
-    DebuggerEvent debuggerEvent = events.take();
-    assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
-
-    Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
-    Location actualLocation = actualBreakpoint.getLocation();
-    assertEquals(actualLocation.getLineNumber(), 36);
-    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/BreakpointsTest.java");
-    assertTrue(actualBreakpoint.isEnabled());
-
-    debuggerEvent = events.take();
-    assertTrue(debuggerEvent instanceof SuspendEvent);
-
-    Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
-    assertEquals(suspendLocation.getLineNumber(), 36);
-    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/BreakpointsTest.java");
-  }
-
-  @Test(priority = 2)
-  public void shouldAddBreakpointByFqn() throws Exception {
-    try {
-      debugger.jumpTo(new JumpIntoActionImpl("org.eclipse.BreakpointsTest", 21));
-    } catch (DebuggerException e) {
-      // class might not be loaded yet
-    }
+    Location location2 =
+        new LocationImpl(
+            "/test/src/org/eclipse/RunToLocationTest.java", 23, false, -1, "/test", null, -1);
+    debugger.addBreakpoint(new BreakpointImpl(location1, false, null, 0));
+    debugger.addBreakpoint(new BreakpointImpl(location2, false, null, 0));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -121,43 +97,137 @@ public class RunToLocationTest {
     Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
     Location actualLocation = actualBreakpoint.getLocation();
     assertEquals(actualLocation.getLineNumber(), 21);
-    assertEquals(actualLocation.getTarget(), "org.eclipse.BreakpointsTest");
     assertTrue(actualBreakpoint.isEnabled());
-  }
 
-  @Test(priority = 2)
-  public void shouldAddBreakpointInsideInnerClass() throws Exception {
-    try {
-      debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/BreakpointsTest.java", 41));
-    } catch (DebuggerException e) {
-      // class might not be loaded yet
-    }
-
-    DebuggerEvent debuggerEvent = events.take();
+    debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
 
-    Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
-    Location actualLocation = actualBreakpoint.getLocation();
-    assertEquals(actualLocation.getLineNumber(), 41);
-    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/BreakpointsTest.java");
+    actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
+    actualLocation = actualBreakpoint.getLocation();
+    assertEquals(actualLocation.getLineNumber(), 23);
+    assertTrue(actualBreakpoint.isEnabled());
+
+    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 22));
+
+    debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
+
+    actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
+    actualLocation = actualBreakpoint.getLocation();
+    assertEquals(actualLocation.getLineNumber(), 22);
     assertTrue(actualBreakpoint.isEnabled());
 
     debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof SuspendEvent);
 
     Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
-    assertEquals(suspendLocation.getLineNumber(), 41);
-    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/BreakpointsTest.java");
+    assertEquals(suspendLocation.getLineNumber(), 21);
+
+    debugger.resume(new ResumeActionImpl());
+
+    debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof SuspendEvent);
+
+    suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
+    assertEquals(suspendLocation.getLineNumber(), 23);
   }
 
-  //  @Test(priority = 1)
-  //  public void shouldDeleteBreakpointAfterRunToLocation() throws Exception {
-  //    try {
-  //      debugger.resume(new ResumeActionImpl());
-  //    } catch (DebuggerException e) {
-  //      // class might not be loaded yet
-  //    }
-  //    assertTrue(debugger.getAllBreakpoints().size() == 1);
-  //    assertTrue(debugger.getAllBreakpoints().get(0).getLocation().getLineNumber() == 19);
-  //  }
+  @Test(priority = 2)
+  public void shouldRunToLocationInsideMethod() throws Exception {
+    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 40));
+
+    DebuggerEvent debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
+
+    Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
+    Location actualLocation = actualBreakpoint.getLocation();
+    assertEquals(actualLocation.getLineNumber(), 40);
+    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/RunToLocationTest.java");
+    assertTrue(actualBreakpoint.isEnabled());
+
+    debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof SuspendEvent);
+
+    Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
+    assertEquals(suspendLocation.getLineNumber(), 40);
+    assertEquals(actualLocation.getTarget(), "/test/src/org/eclipse/RunToLocationTest.java");
+  }
+
+  @Test(priority = 3)
+  public void shouldAddBreakpointByFqn() throws Exception {
+    debugger.jumpTo(new JumpIntoActionImpl("org.eclipse.RunToLocationTest", 25));
+
+    DebuggerEvent debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
+
+    Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
+    Location actualLocation = actualBreakpoint.getLocation();
+    assertEquals(actualLocation.getLineNumber(), 25);
+    assertEquals(actualLocation.getTarget(), "org.eclipse.RunToLocationTest");
+    assertTrue(actualBreakpoint.isEnabled());
+
+    debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof SuspendEvent);
+
+    Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
+    assertEquals(suspendLocation.getLineNumber(), 25);
+    assertEquals(actualLocation.getTarget(), "org.eclipse.RunToLocationTest");
+  }
+
+  @Test(priority = 4)
+  public void shouldAddBreakpointInsideInnerClass() throws Exception {
+    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 45));
+
+    DebuggerEvent debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
+
+    Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
+    Location actualLocation = actualBreakpoint.getLocation();
+    assertEquals(actualLocation.getLineNumber(), 45);
+    assertTrue(actualBreakpoint.isEnabled());
+
+    debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof SuspendEvent);
+
+    Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
+    assertEquals(suspendLocation.getLineNumber(), 45);
+  }
+
+  @Test(priority = 5)
+  public void shouldAddBreakpointInsideAnonymousClass() throws Exception {
+    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 30));
+
+    DebuggerEvent debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
+
+    Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
+    Location actualLocation = actualBreakpoint.getLocation();
+    assertEquals(actualLocation.getLineNumber(), 30);
+    assertTrue(actualBreakpoint.isEnabled());
+
+    debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof SuspendEvent);
+
+    Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
+    assertEquals(suspendLocation.getLineNumber(), 30);
+  }
+
+  @Test(priority = 6)
+  public void shouldAddBreakpointInsideLambdaFunction() throws Exception {
+    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 36));
+
+    DebuggerEvent debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
+
+    Breakpoint actualBreakpoint = ((BreakpointActivatedEvent) debuggerEvent).getBreakpoint();
+    Location actualLocation = actualBreakpoint.getLocation();
+    assertEquals(actualLocation.getLineNumber(), 36);
+    assertTrue(actualBreakpoint.isEnabled());
+
+    debuggerEvent = events.take();
+    assertTrue(debuggerEvent instanceof SuspendEvent);
+
+    Location suspendLocation = ((SuspendEvent) debuggerEvent).getLocation();
+    assertEquals(suspendLocation.getLineNumber(), 36);
+  }
 }
