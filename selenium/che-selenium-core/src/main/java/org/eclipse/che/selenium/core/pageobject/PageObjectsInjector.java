@@ -10,11 +10,11 @@
  */
 package org.eclipse.che.selenium.core.pageobject;
 
-import static java.lang.String.format;
-
+import com.google.inject.Binding;
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.name.Named;
+import com.google.inject.spi.LinkedKeyBinding;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.eclipse.che.commons.annotation.Nullable;
 import org.eclipse.che.selenium.core.SeleniumWebDriver;
 import org.eclipse.che.selenium.core.constant.TestBrowser;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -34,7 +34,9 @@ import org.slf4j.LoggerFactory;
  *
  * @author Anatolii Bazko
  */
-public abstract class PageObjectsInjector {
+public class PageObjectsInjector {
+
+  private static Logger LOG = LoggerFactory.getLogger(PageObjectsInjector.class);
 
   @Inject
   @Named("sys.browser")
@@ -57,33 +59,20 @@ public abstract class PageObjectsInjector {
 
     for (Integer poIndex : toInject.keySet()) {
       Map<Class<?>, Object> container = new HashMap<>();
-      SeleniumWebDriver seleniumWebDriver =
-          new SeleniumWebDriver(browser, webDriverPort, gridMode, webDriverVersion);
-
-      container.put(SeleniumWebDriver.class, seleniumWebDriver);
-      container.putAll(getDependenciesWithWebdriver(seleniumWebDriver));
+      container.put(
+          SeleniumWebDriver.class,
+          new SeleniumWebDriver(browser, webDriverPort, gridMode, webDriverVersion));
 
       for (Field f : toInject.get(poIndex)) {
-        LoggerFactory.getLogger(this.getClass())
-            .info("Inject field {} into test {}.", f, testInstance);
-
         try {
           injectField(f, testInstance, container, injector);
         } catch (Exception e) {
-          LoggerFactory.getLogger(this.getClass())
-              .error(
-                  format(
-                      "Error of injection member '%s' into test '%s'. %s",
-                      f, testInstance, e.getMessage()),
-                  e);
-          throw e;
+          throw new RuntimeException(
+              String.format("Error of injection member '%s' into test '%s'.", f, testInstance), e);
         }
       }
     }
   }
-
-  public abstract Map<Class<?>, Object> getDependenciesWithWebdriver(
-      SeleniumWebDriver seleniumWebDriver);
 
   private void injectField(
       Field field, Object instance, Map<Class<?>, Object> container, Injector injector)
@@ -99,29 +88,41 @@ public abstract class PageObjectsInjector {
 
     Optional<Constructor<?>> constructor = findConstructor(type);
     if (!constructor.isPresent()) {
-      // interface? get instance from a guice container
-      obj = injector.getInstance(type);
-
-    } else {
-      Class<?>[] parameterTypes = constructor.get().getParameterTypes();
-      Object[] params = new Object[parameterTypes.length];
-
-      for (int i = 0; i < parameterTypes.length; i++) {
-        Object pt = container.get(parameterTypes[i]);
-        if (pt == null) {
-          pt = instantiate(parameterTypes[i], container, injector);
-        }
-        params[i] = pt;
+      Binding binding = injector.getBinding(type);
+      if (binding instanceof LinkedKeyBinding) {
+        // we can get bound type from injector
+        Class boundType = ((LinkedKeyBinding) binding).getLinkedKey().getTypeLiteral().getRawType();
+        obj = instantiate(boundType, container, injector);
+      } else {
+        // get instance from a guice container
+        obj = injector.getInstance(type);
       }
 
-      obj = constructor.get().newInstance(params);
+    } else {
+      obj = doInstantiate(container, injector, constructor);
     }
 
     container.put(obj.getClass(), obj);
     return obj;
   }
 
-  @Nullable
+  private Object doInstantiate(
+      Map<Class<?>, Object> container, Injector injector, Optional<Constructor<?>> constructor)
+      throws Exception {
+    Class<?>[] parameterTypes = constructor.get().getParameterTypes();
+    Object[] params = new Object[parameterTypes.length];
+
+    for (int i = 0; i < parameterTypes.length; i++) {
+      Object pt = container.get(parameterTypes[i]);
+      if (pt == null) {
+        pt = instantiate(parameterTypes[i], container, injector);
+      }
+      params[i] = pt;
+    }
+
+    return constructor.get().newInstance(params);
+  }
+
   private Optional<Constructor<?>> findConstructor(Class<?> type) {
     return Stream.of(type.getConstructors())
         .filter(

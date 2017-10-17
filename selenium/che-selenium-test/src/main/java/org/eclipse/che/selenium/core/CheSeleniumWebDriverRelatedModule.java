@@ -11,7 +11,7 @@
 package org.eclipse.che.selenium.core;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
+import com.google.inject.Inject;
 import javax.inject.Named;
 import org.eclipse.che.selenium.core.entrance.CookieEntrance;
 import org.eclipse.che.selenium.core.entrance.Entrance;
@@ -29,20 +29,18 @@ public class CheSeleniumWebDriverRelatedModule extends AbstractModule {
 
   private static final String CHE_MULTIUSER = "che.multiuser";
 
+  @Inject
+  @Named(CHE_MULTIUSER)
+  private boolean isMultiuser;
+
   @Override
   protected void configure() {
     bind(LoginPage.class).to(CheLoginPage.class);
-  }
 
-  @Provides
-  public Entrance getEntrance(
-      @Named(CHE_MULTIUSER) boolean isMultiuser,
-      LoginPage loginPage,
-      SeleniumWebDriver seleniumWebDriver) {
     if (isMultiuser) {
-      return new LoginPageEntrance(loginPage);
+      bind(Entrance.class).to(LoginPageEntrance.class);
     } else {
-      return new CookieEntrance(seleniumWebDriver);
+      bind(Entrance.class).to(CookieEntrance.class);
     }
   }
 }
