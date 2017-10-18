@@ -50,7 +50,7 @@ public class JumpIntoAction extends AbstractPerspectiveAction {
         locale.jumpToCursor(),
         locale.jumpToCursorDescription(),
         null,
-        resources.stepOver());
+        resources.runToLocation());
     this.debuggerManager = debuggerManager;
     this.editorAgent = editorAgent;
   }

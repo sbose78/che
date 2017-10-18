@@ -36,12 +36,7 @@ import com.sun.jdi.request.InvalidRequestStateException;
 import com.sun.jdi.request.StepRequest;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.locks.Lock;
@@ -62,7 +57,6 @@ import org.eclipse.che.api.debug.shared.model.impl.BreakpointImpl;
 import org.eclipse.che.api.debug.shared.model.impl.DebuggerInfoImpl;
 import org.eclipse.che.api.debug.shared.model.impl.LocationImpl;
 import org.eclipse.che.api.debug.shared.model.impl.ThreadStateImpl;
-import org.eclipse.che.api.debug.shared.model.impl.action.ResumeActionImpl;
 import org.eclipse.che.api.debug.shared.model.impl.event.BreakpointActivatedEventImpl;
 import org.eclipse.che.api.debug.shared.model.impl.event.DisconnectEventImpl;
 import org.eclipse.che.api.debug.shared.model.impl.event.SuspendEventImpl;
@@ -202,9 +196,11 @@ public class JavaDebugger implements EventsHandler, Debugger {
 
   @Override
   public void jumpTo(JumpIntoAction action) throws DebuggerException {
+    lock.lock();
     BreakpointImpl breakpoint =
         new BreakpointImpl(
             new LocationImpl(action.getTarget(), action.getLineNumber()), false, null, -1);
+
     try {
       addBreakpoint(breakpoint);
     } catch (DebuggerException e) {
@@ -213,7 +209,16 @@ public class JavaDebugger implements EventsHandler, Debugger {
       }
     }
 
-    resume(new ResumeActionImpl());
+    try {
+      invalidateCurrentThread();
+
+      vm.resume();
+      LOG.debug("Resume VM");
+    } catch (VMCannotBeModifiedException e) {
+      throw new DebuggerException(e.getMessage(), e);
+    } finally {
+      lock.unlock();
+    }
   }
 
   @Override
@@ -362,6 +367,13 @@ public class JavaDebugger implements EventsHandler, Debugger {
     lock.lock();
     try {
       invalidateCurrentThread();
+
+      for (Breakpoint breakpoint : getAllBreakpoints()) {
+        if (breakpoint.getHitCount() == -1) {
+          deleteBreakpoint(breakpoint.getLocation());
+        }
+      }
+
       vm.resume();
       LOG.debug("Resume VM");
     } catch (VMCannotBeModifiedException e) {
@@ -599,12 +611,6 @@ public class JavaDebugger implements EventsHandler, Debugger {
         Location location = new JdbLocation(event.thread().frame(0));
 
         debuggerCallback.onEvent(new SuspendEventImpl(location));
-
-        for (Breakpoint breakpoint : getAllBreakpoints()) {
-          if (breakpoint.getHitCount() == -1) {
-            deleteBreakpoint(breakpoint.getLocation());
-          }
-        }
 
         if (hitCount != null && hitCount > 1) {
           event.request().putProperty("hit_count", hitCount - 1);
