@@ -42,7 +42,12 @@ import org.eclipse.che.api.debug.shared.dto.action.ActionDto;
 import org.eclipse.che.api.debug.shared.model.Location;
 import org.eclipse.che.api.debug.shared.model.ThreadState;
 import org.eclipse.che.api.debug.shared.model.VariablePath;
-import org.eclipse.che.api.debug.shared.model.action.*;
+import org.eclipse.che.api.debug.shared.model.action.ResumeAction;
+import org.eclipse.che.api.debug.shared.model.action.RunToLocationAction;
+import org.eclipse.che.api.debug.shared.model.action.StartAction;
+import org.eclipse.che.api.debug.shared.model.action.StepIntoAction;
+import org.eclipse.che.api.debug.shared.model.action.StepOutAction;
+import org.eclipse.che.api.debug.shared.model.action.StepOverAction;
 import org.eclipse.che.api.debug.shared.model.impl.LocationImpl;
 import org.eclipse.che.api.debug.shared.model.impl.VariablePathImpl;
 import org.eclipse.che.api.debugger.server.exceptions.DebuggerException;
@@ -113,7 +118,7 @@ public class DebuggerService {
       case START:
         debugger.start((StartAction) action);
         break;
-      case JUMP_TO_CURSOR:
+      case RUN_TO_LOCATION:
         debugger.runToLocation((RunToLocationAction) action);
         break;
       case RESUME:

@@ -10,6 +10,9 @@
  */
 package org.eclipse.che.api.debug.shared.model;
 
+import org.eclipse.che.api.debug.shared.model.action.ResumeAction;
+import org.eclipse.che.api.debug.shared.model.action.RunToLocationAction;
+
 /** @author Anatoliy Bazko */
 public interface Breakpoint {
   /** The location of the breakpoint. */
@@ -21,5 +24,10 @@ public interface Breakpoint {
   /** The condition. */
   String getCondition();
 
+  /**
+   * Number of activations. If is 0 then breakpoint can be activated an infinite number
+   * of times. If hit count is set to -1 then breakpoint can be activated only by {@link
+   * RunToLocationAction}, but breakpoint will be deleted after {@link ResumeAction}.
+   */
   int getHitCount();
 }

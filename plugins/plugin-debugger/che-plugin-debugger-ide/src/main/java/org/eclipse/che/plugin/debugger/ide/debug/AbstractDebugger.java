@@ -576,7 +576,7 @@ public abstract class AbstractDebugger implements Debugger, DebuggerObservable {
     RunToLocationActionDto jumpIntoActionDto =
         dtoFactory
             .createDto(RunToLocationActionDto.class)
-            .withType(Action.TYPE.JUMP_TO_CURSOR)
+            .withType(Action.TYPE.RUN_TO_LOCATION)
             .withTarget(source)
             .withLineNumber(lineNumber);
       service.jumpInto(debugSessionDto.getId(), jumpIntoActionDto);
