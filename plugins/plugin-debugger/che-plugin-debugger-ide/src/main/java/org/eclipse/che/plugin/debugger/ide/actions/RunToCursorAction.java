@@ -15,9 +15,7 @@ package org.eclipse.che.plugin.debugger.ide.actions;
 import com.google.inject.Inject;
 import org.eclipse.che.ide.api.action.AbstractPerspectiveAction;
 import org.eclipse.che.ide.api.action.ActionEvent;
-import org.eclipse.che.ide.api.app.AppContext;
 import org.eclipse.che.ide.api.editor.EditorAgent;
-import org.eclipse.che.ide.api.editor.EditorInput;
 import org.eclipse.che.ide.api.editor.EditorPartPresenter;
 import org.eclipse.che.ide.api.editor.texteditor.TextEditor;
 import org.eclipse.che.ide.debug.Debugger;
@@ -30,17 +28,17 @@ import java.util.Collections;
 import static org.eclipse.che.ide.workspace.perspectives.project.ProjectPerspective.PROJECT_PERSPECTIVE_ID;
 
 /**
- * Action which allows step over in debugger session
+ * Action which allows run to cursor in debugger session
  *
  * @author Igor Vinokur
  */
-public class JumpIntoAction extends AbstractPerspectiveAction {
+public class RunToCursorAction extends AbstractPerspectiveAction {
 
   private final DebuggerManager debuggerManager;
   private final EditorAgent editorAgent;
 
   @Inject
-  public JumpIntoAction(
+  public RunToCursorAction(
       DebuggerManager debuggerManager,
       EditorAgent editorAgent,
       DebuggerLocalizationConstant locale,

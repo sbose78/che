@@ -13,17 +13,14 @@
 
 package org.eclipse.che.api.debug.shared.model.impl.action;
 
-import org.eclipse.che.api.debug.shared.dto.LocationDto;
-import org.eclipse.che.api.debug.shared.model.Location;
-import org.eclipse.che.api.debug.shared.model.action.JumpIntoAction;
-import org.eclipse.che.api.debug.shared.model.action.ResumeAction;
+import org.eclipse.che.api.debug.shared.model.action.RunToLocationAction;
 
-public class JumpIntoActionImpl extends ActionImpl implements JumpIntoAction {
+public class RunToLocationActionImpl extends ActionImpl implements RunToLocationAction {
 
     private final String target;
     private final int lineNumber;
 
-    public JumpIntoActionImpl(String target, int lineNumber) {
+    public RunToLocationActionImpl(String target, int lineNumber) {
         super(TYPE.JUMP_TO_CURSOR);
         this.target = target;
         this.lineNumber = lineNumber;

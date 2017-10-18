@@ -342,7 +342,7 @@ public class GdbDebugger implements Debugger {
   }
 
   @Override
-  public void jumpTo(JumpIntoAction action) throws DebuggerException {
+  public void runToLocation(RunToLocationAction action) throws DebuggerException {
 
   }
 

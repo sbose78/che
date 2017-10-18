@@ -188,7 +188,7 @@ public class DebuggerServiceClientImpl implements DebuggerServiceClient {
   }
 
   @Override
-  public Promise<Void> jumpInto(String id, JumpIntoActionDto action) {
+  public Promise<Void> jumpInto(String id, RunToLocationActionDto action) {
     return performAction(id, action);
   }
 

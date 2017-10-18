@@ -10,8 +10,12 @@
  */
 package org.eclipse.che.api.debug.shared.model.action;
 
-public interface JumpIntoAction extends Action {
+/** @author Igor Vinokur */
+public interface RunToLocationAction extends Action {
+
+  /** Returns target file path */
   String getTarget();
 
+  /** Returns specified line number */
   int getLineNumber();
 }

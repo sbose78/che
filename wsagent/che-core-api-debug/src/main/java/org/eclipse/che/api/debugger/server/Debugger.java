@@ -201,8 +201,6 @@ public interface Debugger {
    */
   void stepOut(StepOutAction action) throws DebuggerException;
 
-  void jumpTo(JumpIntoAction action) throws DebuggerException;
-
   /**
    * Resume application is being debugged. When process stops then {@link SuspendEvent} must be
    * fired.
@@ -211,6 +209,15 @@ public interface Debugger {
    * @throws DebuggerException if any error occur
    */
   void resume(ResumeAction action) throws DebuggerException;
+
+  /**
+   * Resume application is being debugged to specified location.
+   * When process reaches specified location then {@link SuspendEvent} must be fired.
+   *
+   * @param action contains specific parameters
+   * @throws DebuggerException if any error occur
+   */
+  void runToLocation(RunToLocationAction action) throws DebuggerException;
 
   /**
    * Dump values of local variables, fields and method arguments of the current frame.

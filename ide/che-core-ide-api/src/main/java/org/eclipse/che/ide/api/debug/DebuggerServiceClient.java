@@ -159,7 +159,7 @@ public interface DebuggerServiceClient {
    */
   Promise<Void> stepOver(String id, StepOverActionDto action);
 
-  Promise<Void> jumpInto(String id, JumpIntoActionDto action);
+  Promise<Void> jumpInto(String id, RunToLocationActionDto action);
 
   /**
    * Does step out.

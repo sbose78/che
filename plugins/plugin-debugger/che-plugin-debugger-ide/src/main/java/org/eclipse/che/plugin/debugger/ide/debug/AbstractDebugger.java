@@ -67,7 +67,6 @@ import org.eclipse.che.ide.dto.DtoFactory;
 import org.eclipse.che.ide.util.loging.Log;
 import org.eclipse.che.ide.util.storage.LocalStorage;
 import org.eclipse.che.ide.util.storage.LocalStorageProvider;
-import org.eclipse.che.plugin.debugger.ide.actions.JumpIntoAction;
 
 /**
  * The common debugger.
@@ -574,9 +573,9 @@ public abstract class AbstractDebugger implements Debugger, DebuggerObservable {
 
   @Override
   public void jumpInto(int lineNumber, String source) {
-    JumpIntoActionDto jumpIntoActionDto =
+    RunToLocationActionDto jumpIntoActionDto =
         dtoFactory
-            .createDto(JumpIntoActionDto.class)
+            .createDto(RunToLocationActionDto.class)
             .withType(Action.TYPE.JUMP_TO_CURSOR)
             .withTarget(source)
             .withLineNumber(lineNumber);

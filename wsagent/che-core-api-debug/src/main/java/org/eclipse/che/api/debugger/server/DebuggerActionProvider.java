@@ -75,7 +75,7 @@ public class DebuggerActionProvider implements MessageBodyReader<ActionDto> {
       case RESUME:
         return DtoFactory.getInstance().createDtoFromJson(json, ResumeActionDto.class);
       case JUMP_TO_CURSOR:
-        return DtoFactory.getInstance().createDtoFromJson(json, JumpIntoActionDto.class);
+        return DtoFactory.getInstance().createDtoFromJson(json, RunToLocationActionDto.class);
       case START:
         return DtoFactory.getInstance().createDtoFromJson(json, StartActionDto.class);
       case STEP_INTO:

@@ -315,7 +315,7 @@ public class ZendDebugger implements Debugger, IEngineMessageHandler {
   }
 
   @Override
-  public void jumpTo(JumpIntoAction action) throws DebuggerException {
+  public void runToLocation(RunToLocationAction action) throws DebuggerException {
 
   }
 

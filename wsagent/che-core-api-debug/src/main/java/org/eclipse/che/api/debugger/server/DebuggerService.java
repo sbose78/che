@@ -114,7 +114,7 @@ public class DebuggerService {
         debugger.start((StartAction) action);
         break;
       case JUMP_TO_CURSOR:
-        debugger.jumpTo((JumpIntoAction) action);
+        debugger.runToLocation((RunToLocationAction) action);
         break;
       case RESUME:
         debugger.resume((ResumeAction) action);

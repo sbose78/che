@@ -209,7 +209,7 @@ public class NodeJsDebugger implements Debugger, NodeJsProcessObserver {
   }
 
   @Override
-  public void jumpTo(JumpIntoAction action) throws DebuggerException {
+  public void runToLocation(RunToLocationAction action) throws DebuggerException {
 
   }
 

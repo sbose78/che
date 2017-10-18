@@ -64,7 +64,7 @@ public class DebuggerExtension {
       StepIntoAction stepIntoAction,
       StepOverAction stepOverAction,
       StepOutAction stepOutAction,
-      JumpIntoAction jumpIntoAction,
+      RunToCursorAction runToCursorAction,
       ResumeExecutionAction resumeExecutionAction,
       SuspendAction suspendAction,
       EvaluateExpressionAction evaluateExpressionAction,
@@ -86,7 +86,7 @@ public class DebuggerExtension {
     actionManager.registerAction(STEP_INTO_ID, stepIntoAction);
     actionManager.registerAction(STEP_OVER_ID, stepOverAction);
     actionManager.registerAction(STEP_OUT_ID, stepOutAction);
-    actionManager.registerAction("jumpInto", jumpIntoAction);
+    actionManager.registerAction("jumpInto", runToCursorAction);
     actionManager.registerAction(RESUME_EXECUTION_ID, resumeExecutionAction);
     actionManager.registerAction(SUSPEND_EXECUTION_ID, suspendAction);
     actionManager.registerAction(EVALUATE_EXPRESSION_ID, evaluateExpressionAction);
@@ -109,7 +109,7 @@ public class DebuggerExtension {
     runMenu.add(stepIntoAction, LAST);
     runMenu.add(stepOverAction, LAST);
     runMenu.add(stepOutAction, LAST);
-    runMenu.add(jumpIntoAction, LAST);
+    runMenu.add(runToCursorAction, LAST);
     runMenu.add(resumeExecutionAction, LAST);
     runMenu.add(suspendAction, new Constraints(Anchor.BEFORE, RESUME_EXECUTION_ID));
     runMenu.addSeparator();
@@ -122,7 +122,7 @@ public class DebuggerExtension {
     debuggerToolbarActionGroup.add(stepIntoAction);
     debuggerToolbarActionGroup.add(stepOverAction);
     debuggerToolbarActionGroup.add(stepOutAction);
-    debuggerToolbarActionGroup.add(jumpIntoAction);
+    debuggerToolbarActionGroup.add(runToCursorAction);
     debuggerToolbarActionGroup.add(disconnectDebuggerAction);
     debuggerToolbarActionGroup.add(deleteAllBreakpointsAction);
     debuggerToolbarActionGroup.add(changeVariableValueAction);

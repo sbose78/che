@@ -12,28 +12,27 @@
  */
 package org.eclipse.che.api.debug.shared.dto.action;
 
-import org.eclipse.che.api.debug.shared.dto.LocationDto;
-import org.eclipse.che.api.debug.shared.model.action.JumpIntoAction;
+import org.eclipse.che.api.debug.shared.model.action.RunToLocationAction;
 import org.eclipse.che.dto.shared.DTO;
 
 /** @author Igor Vinokur */
 @DTO
-public interface JumpIntoActionDto extends ActionDto, JumpIntoAction {
+public interface RunToLocationActionDto extends ActionDto, RunToLocationAction {
   TYPE getType();
 
   void setType(TYPE type);
 
-  JumpIntoActionDto withType(TYPE type);
+  RunToLocationActionDto withType(TYPE type);
 
   String getTarget();
 
   void setTarget(String target);
 
-  JumpIntoActionDto withTarget(String target);
+  RunToLocationActionDto withTarget(String target);
 
   int getLineNumber();
 
   void setLineNumber(int lineNumber);
 
-  JumpIntoActionDto withLineNumber(int lineNumber);
+  RunToLocationActionDto withLineNumber(int lineNumber);
 }

@@ -22,8 +22,8 @@ import org.eclipse.che.api.debug.shared.model.event.DebuggerEvent;
 import org.eclipse.che.api.debug.shared.model.event.SuspendEvent;
 import org.eclipse.che.api.debug.shared.model.impl.BreakpointImpl;
 import org.eclipse.che.api.debug.shared.model.impl.LocationImpl;
-import org.eclipse.che.api.debug.shared.model.impl.action.JumpIntoActionImpl;
 import org.eclipse.che.api.debug.shared.model.impl.action.ResumeActionImpl;
+import org.eclipse.che.api.debug.shared.model.impl.action.RunToLocationActionImpl;
 import org.eclipse.che.plugin.jdb.server.util.ProjectApiUtils;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -58,7 +58,8 @@ public class RunToLocationTest {
 
   @Test
   public void shouldRunToLocationInsideClass() throws Exception {
-    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 20));
+    debugger.runToLocation(
+        new RunToLocationActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 20));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -107,7 +108,8 @@ public class RunToLocationTest {
     assertEquals(actualLocation.getLineNumber(), 23);
     assertTrue(actualBreakpoint.isEnabled());
 
-    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 22));
+    debugger.runToLocation(
+        new RunToLocationActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 22));
 
     debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -134,7 +136,8 @@ public class RunToLocationTest {
 
   @Test(priority = 2)
   public void shouldRunToLocationInsideMethod() throws Exception {
-    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 40));
+    debugger.runToLocation(
+        new RunToLocationActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 40));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -154,8 +157,8 @@ public class RunToLocationTest {
   }
 
   @Test(priority = 3)
-  public void shouldAddBreakpointByFqn() throws Exception {
-    debugger.jumpTo(new JumpIntoActionImpl("org.eclipse.RunToLocationTest", 25));
+  public void shouldRunToLocationByFqn() throws Exception {
+    debugger.runToLocation(new RunToLocationActionImpl("org.eclipse.RunToLocationTest", 25));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -175,8 +178,9 @@ public class RunToLocationTest {
   }
 
   @Test(priority = 4)
-  public void shouldAddBreakpointInsideInnerClass() throws Exception {
-    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 45));
+  public void shouldRunToLocationInsideInnerClass() throws Exception {
+    debugger.runToLocation(
+        new RunToLocationActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 45));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -194,8 +198,9 @@ public class RunToLocationTest {
   }
 
   @Test(priority = 5)
-  public void shouldAddBreakpointInsideAnonymousClass() throws Exception {
-    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 30));
+  public void shouldRunToLocationInsideAnonymousClass() throws Exception {
+    debugger.runToLocation(
+        new RunToLocationActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 30));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);
@@ -213,8 +218,9 @@ public class RunToLocationTest {
   }
 
   @Test(priority = 6)
-  public void shouldAddBreakpointInsideLambdaFunction() throws Exception {
-    debugger.jumpTo(new JumpIntoActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 36));
+  public void shouldRunToLocationInsideLambdaFunction() throws Exception {
+    debugger.runToLocation(
+        new RunToLocationActionImpl("/test/src/org/eclipse/RunToLocationTest.java", 36));
 
     DebuggerEvent debuggerEvent = events.take();
     assertTrue(debuggerEvent instanceof BreakpointActivatedEvent);

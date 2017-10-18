@@ -195,7 +195,7 @@ public class JavaDebugger implements EventsHandler, Debugger {
   }
 
   @Override
-  public void jumpTo(JumpIntoAction action) throws DebuggerException {
+  public void runToLocation(RunToLocationAction action) throws DebuggerException {
     lock.lock();
     BreakpointImpl breakpoint =
         new BreakpointImpl(
